@@ -1,0 +1,187 @@
+{
+  "name": "ruff-toolkit",
+  "displayName": "Ruff Toolkit",
+  "description": "Integrates Python Ruff linter and formatter into VS Code context menus and Command Palette.",
+  "version": "1.0.0",
+  "publisher": "sagarkarn",
+  "author": "Sagar Karn",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sagarkarn/ruff-toolkit.git"
+  },
+  "icon": "icon.png",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Formatters",
+    "Linters",
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Ruff Toolkit",
+      "properties": {
+        "ruffToolkit.ruffPath": {
+          "type": "string",
+          "default": "ruff",
+          "description": "Path to the Ruff executable (e.g. 'ruff' or absolute path)."
+        },
+        "ruffToolkit.showNotifications": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show notification toast messages for success/failure."
+        },
+        "ruffToolkit.autoRefresh": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically refresh editor contents after format or fix actions."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "ruffToolkit.formatFile",
+        "title": "Format File",
+        "category": "Ruff"
+      },
+      {
+        "command": "ruffToolkit.checkFile",
+        "title": "Check File",
+        "category": "Ruff"
+      },
+      {
+        "command": "ruffToolkit.fixIssues",
+        "title": "Fix Issues",
+        "category": "Ruff"
+      },
+      {
+        "command": "ruffToolkit.checkAndFix",
+        "title": "Check & Fix",
+        "category": "Ruff"
+      },
+      {
+        "command": "ruffToolkit.organizeImports",
+        "title": "Organize Imports",
+        "category": "Ruff"
+      },
+      {
+        "command": "ruffToolkit.formatWorkspace",
+        "title": "Format Workspace",
+        "category": "Ruff"
+      },
+      {
+        "command": "ruffToolkit.checkWorkspace",
+        "title": "Check Workspace",
+        "category": "Ruff"
+      },
+      {
+        "command": "ruffToolkit.fixWorkspace",
+        "title": "Fix Workspace",
+        "category": "Ruff"
+      }
+    ],
+    "submenus": [
+      {
+        "id": "ruffToolkit.submenu",
+        "label": "Ruff"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "submenu": "ruffToolkit.submenu",
+          "when": "resourceExtname == .py",
+          "group": "1_modification"
+        }
+      ],
+      "editor/context": [
+        {
+          "submenu": "ruffToolkit.submenu",
+          "when": "resourceExtname == .py",
+          "group": "1_modification"
+        }
+      ],
+      "editor/title": [
+        {
+          "submenu": "ruffToolkit.submenu",
+          "when": "resourceExtname == .py",
+          "group": "navigation"
+        }
+      ],
+      "ruffToolkit.submenu": [
+        {
+          "command": "ruffToolkit.formatFile",
+          "group": "1_actions@1"
+        },
+        {
+          "command": "ruffToolkit.checkFile",
+          "group": "1_actions@2"
+        },
+        {
+          "command": "ruffToolkit.fixIssues",
+          "group": "1_actions@3"
+        },
+        {
+          "command": "ruffToolkit.checkAndFix",
+          "group": "1_actions@4"
+        },
+        {
+          "command": "ruffToolkit.organizeImports",
+          "group": "1_actions@5"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "ruffToolkit.formatFile",
+          "when": "editorLangId == python"
+        },
+        {
+          "command": "ruffToolkit.checkFile",
+          "when": "editorLangId == python"
+        },
+        {
+          "command": "ruffToolkit.fixIssues",
+          "when": "editorLangId == python"
+        },
+        {
+          "command": "ruffToolkit.checkAndFix",
+          "when": "editorLangId == python"
+        },
+        {
+          "command": "ruffToolkit.organizeImports",
+          "when": "editorLangId == python"
+        },
+        {
+          "command": "ruffToolkit.formatWorkspace",
+          "when": "workspaceHighlight"
+        },
+        {
+          "command": "ruffToolkit.checkWorkspace",
+          "when": "workspaceHighlight"
+        },
+        {
+          "command": "ruffToolkit.fixWorkspace",
+          "when": "workspaceHighlight"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
+  }
+}

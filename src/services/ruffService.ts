@@ -142,20 +142,23 @@ export class RuffService {
 
   /**
    * Checks if Ruff is installed by running `<ruffPath> --version`.
-   * Displays an error notification if not found.
+   * Displays an error notification if not found and silent is false.
    */
-  public async checkRuffInstalled(uri?: vscode.Uri): Promise<boolean> {
+  public async checkRuffInstalled(uri?: vscode.Uri, silent = false): Promise<boolean> {
     const ruffPath = await this.resolveRuffPath(uri);
     const result = await executeProcess(ruffPath, ['--version']);
     
     if (result.error || result.code !== 0) {
-      const errorMsg = 
-        `Ruff executable not found.\n` +
-        `Please install Ruff:\n\n` +
-        `pip install ruff`;
-      
-      vscode.window.showErrorMessage(errorMsg, { modal: true });
       outputService.logError(`Ruff validation failed. Executable: "${ruffPath}". Stderr: ${result.stderr}`);
+      
+      if (!silent) {
+        const errorMsg = 
+          `Ruff executable not found.\n` +
+          `Please install Ruff:\n\n` +
+          `pip install ruff`;
+        
+        vscode.window.showErrorMessage(errorMsg, { modal: true });
+      }
       return false;
     }
     

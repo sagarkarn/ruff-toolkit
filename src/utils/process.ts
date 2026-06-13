@@ -60,19 +60,20 @@ export function executeProcessCancelable(
     child.stdout?.on('data', onData);
     child.stderr?.on('data', onErrorData);
 
-    const cleanup = () => {
-      child.stdout?.off('data', onData);
-      child.stderr?.off('data', onErrorData);
-    };
-
-    token.onCancellationRequested(() => {
+    const cancellationDisposable = token.onCancellationRequested(() => {
       // Kill the process if cancellation requested
       try {
         child.kill();
-      } catch {
-        // ignore error on kill
+      } catch (e) {
+        // Ignored
       }
     });
+
+    const cleanup = () => {
+      child.stdout?.off('data', onData);
+      child.stderr?.off('data', onErrorData);
+      cancellationDisposable.dispose();
+    };
 
     child.on('close', (code: number | null) => {
       cleanup();

@@ -43,7 +43,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   const startLanguageClient = async () => {
     const folders = vscode.workspace.workspaceFolders;
     const firstFolderUri = folders && folders.length > 0 ? folders[0].uri : undefined;
-    const installed = await ruffService.checkRuffInstalled(firstFolderUri);
+    const installed = await ruffService.checkRuffInstalled(firstFolderUri, true);
     if (installed) {
       const resolvedRuffPath = await ruffService.resolveRuffPath(firstFolderUri);
       const serverOptions: ServerOptions = {

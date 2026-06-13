@@ -1,4 +1,5 @@
-import { execFile, ExecFileOptions } from 'child_process';
+import { execFile, ExecFileOptions, spawn, SpawnOptions } from 'child_process';
+import { CancellationToken } from 'vscode';
 import { ProcessResult } from '../types';
 
 /**
@@ -34,6 +35,53 @@ export function executeProcess(
           duration
         });
       }
+    });
+  });
+}
+export function executeProcessCancelable(
+  file: string,
+  args: string[],
+  options: ExecFileOptions = {},
+  token: CancellationToken
+): Promise<ProcessResult> {
+  return new Promise((resolve) => {
+    const startTime = Date.now();
+    const child = spawn(file, args, { ...options, shell: false });
+    let stdout = '';
+    let stderr = '';
+
+    const onData = (data: Buffer) => {
+      stdout += data.toString('utf8');
+    };
+    const onErrorData = (data: Buffer) => {
+      stderr += data.toString('utf8');
+    };
+
+    child.stdout?.on('data', onData);
+    child.stderr?.on('data', onErrorData);
+
+    const cleanup = () => {
+      child.stdout?.off('data', onData);
+      child.stderr?.off('data', onErrorData);
+    };
+
+    token.onCancellationRequested(() => {
+      // Kill the process if cancellation requested
+      try {
+        child.kill();
+      } catch {}
+    });
+
+    child.on('close', (code: number | null) => {
+      cleanup();
+      const duration = Date.now() - startTime;
+      resolve({
+        code,
+        stdout,
+        stderr,
+        duration,
+        error: code && code !== 0 ? new Error(`Process exited with code ${code}`) : undefined
+      });
     });
   });
 }

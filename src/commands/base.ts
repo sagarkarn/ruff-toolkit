@@ -32,16 +32,16 @@ export async function runFileAction(
   uri: vscode.Uri | undefined,
   uris: vscode.Uri[] | undefined,
   actionLabel: string,
-  fileAction: (uri: vscode.Uri, silent: boolean) => Promise<RuffCommandResult>
+  fileAction: (uri: vscode.Uri, silent: boolean, token?: vscode.CancellationToken) => Promise<RuffCommandResult>
 ): Promise<void> {
-  const installed = await ruffService.checkRuffInstalled();
-  if (!installed) {
-    return;
-  }
-
   const targets = getTargetUris(uri, uris);
   if (targets.length === 0) {
     vscode.window.showWarningMessage(`No Python files selected to ${actionLabel}.`);
+    return;
+  }
+
+  const installed = await ruffService.checkRuffInstalled(targets[0]);
+  if (!installed) {
     return;
   }
 
@@ -71,7 +71,7 @@ export async function runFileAction(
           increment: (1 / targets.length) * 100
         });
 
-        const result = await fileAction(target, true);
+        const result = await fileAction(target, true, token);
         if (result.success) {
           completedCount++;
           if (result.violationsCount !== undefined) {
@@ -111,16 +111,16 @@ export async function runFileAction(
  */
 export async function runWorkspaceAction(
   actionLabel: string,
-  workspaceAction: (workspaceRoot: string, silent: boolean) => Promise<RuffCommandResult>
+  workspaceAction: (workspaceRoot: string, silent: boolean, token?: vscode.CancellationToken) => Promise<RuffCommandResult>
 ): Promise<void> {
-  const installed = await ruffService.checkRuffInstalled();
-  if (!installed) {
-    return;
-  }
-
   const workspacePaths = getAllWorkspacePaths();
   if (workspacePaths.length === 0) {
     vscode.window.showWarningMessage(`No workspace folders open to ${actionLabel}.`);
+    return;
+  }
+
+  const installed = await ruffService.checkRuffInstalled(vscode.Uri.file(workspacePaths[0]));
+  if (!installed) {
     return;
   }
 
@@ -150,7 +150,7 @@ export async function runWorkspaceAction(
           increment: (1 / workspacePaths.length) * 100
         });
 
-        const result = await workspaceAction(workspacePath, true);
+        const result = await workspaceAction(workspacePath, true, token);
         if (result.success) {
           completedCount++;
           if (result.violationsCount !== undefined) {

@@ -23,9 +23,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   // Register new utility commands
   const showVersionCmd = vscode.commands.registerCommand('ruffToolkit.showVersion', async () => {
-    const result = await ruffService.checkRuffInstalled();
+    const activeEditor = vscode.window.activeTextEditor;
+    const uri = activeEditor?.document.uri;
+    const result = await ruffService.checkRuffInstalled(uri);
     if (result) {
-      const versionResult = await ruffService.runRuffCommand(['--version'], undefined, 'show version', 'Ruff version', undefined, true);
+      const versionResult = await ruffService.runRuffCommand(['--version'], undefined, 'show version', 'Ruff version', uri, true);
       vscode.window.showInformationMessage(`Ruff version: ${versionResult.stdout.trim()}`);
     }
   });
@@ -39,11 +41,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   // Helper function to start the language client
   const startLanguageClient = async () => {
-    const installed = await ruffService.checkRuffInstalled();
+    const folders = vscode.workspace.workspaceFolders;
+    const firstFolderUri = folders && folders.length > 0 ? folders[0].uri : undefined;
+    const installed = await ruffService.checkRuffInstalled(firstFolderUri);
     if (installed) {
-      const settings = ruffService.getSettings();
+      const resolvedRuffPath = await ruffService.resolveRuffPath(firstFolderUri);
       const serverOptions: ServerOptions = {
-        command: settings.ruffPath,
+        command: resolvedRuffPath,
         args: ['server'],
       };
       const clientOptions: LanguageClientOptions = {
@@ -52,7 +56,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       client = new LanguageClient('ruff', 'Ruff Language Server', serverOptions, clientOptions);
       try {
         await client.start();
-        outputService.logInfo(`Ruff Language client started using executable: ${settings.ruffPath}`);
+        outputService.logInfo(`Ruff Language client started using executable: ${resolvedRuffPath}`);
       } catch (err) {
         outputService.logError(`Failed to start Ruff Language Server: ${err}`);
       }

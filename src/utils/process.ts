@@ -1,4 +1,4 @@
-import { execFile, ExecFileOptions, spawn, SpawnOptions } from 'child_process';
+import { execFile, ExecFileOptions, spawn } from 'child_process';
 import { CancellationToken } from 'vscode';
 import { ProcessResult } from '../types';
 
@@ -69,7 +69,9 @@ export function executeProcessCancelable(
       // Kill the process if cancellation requested
       try {
         child.kill();
-      } catch {}
+      } catch {
+        // ignore error on kill
+      }
     });
 
     child.on('close', (code: number | null) => {

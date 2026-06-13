@@ -56,6 +56,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       client = new LanguageClient('ruff', 'Ruff Language Server', serverOptions, clientOptions);
       try {
         await client.start();
+        ruffService.isLspActive = true;
         outputService.logInfo(`Ruff Language client started using executable: ${resolvedRuffPath}`);
       } catch (err) {
         outputService.logError(`Failed to start Ruff Language Server: ${err}`);
@@ -65,6 +66,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   // Helper function to stop the language client
   const stopLanguageClient = async () => {
+    ruffService.isLspActive = false;
     if (client) {
       try {
         await client.stop();

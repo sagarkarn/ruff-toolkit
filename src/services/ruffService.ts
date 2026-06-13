@@ -19,6 +19,7 @@ export class RuffService {
   private static instance: RuffService | null = null;
 
   private diagnosticCollection: vscode.DiagnosticCollection;
+  public isLspActive = false;
 
   private constructor() {
     this.diagnosticCollection = vscode.languages.createDiagnosticCollection('ruff');
@@ -213,7 +214,11 @@ export class RuffService {
 
     // Publish diagnostics for check actions
     if (actionLabel.startsWith('check') && uriToRefresh) {
-      this.publishDiagnostics(uriToRefresh, commandResult);
+      if (this.isLspActive) {
+        this.diagnosticCollection.delete(uriToRefresh);
+      } else {
+        this.publishDiagnostics(uriToRefresh, commandResult);
+      }
     }
 
     if (isSuccess) {

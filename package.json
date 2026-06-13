@@ -19,7 +19,10 @@
     "Linters",
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage:python",
+    "onCommand:ruffToolkit.*"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "configuration": {
@@ -81,6 +84,21 @@
       {
         "command": "ruffToolkit.fixWorkspace",
         "title": "Fix Workspace",
+        "category": "Ruff"
+      },
+      {
+        "command": "ruffToolkit.showVersion",
+        "title": "Show Ruff Version",
+        "category": "Ruff"
+      },
+      {
+        "command": "ruffToolkit.openSettings",
+        "title": "Open Ruff Settings",
+        "category": "Ruff"
+      },
+      {
+        "command": "ruffToolkit.showOutput",
+        "title": "Show Ruff Output",
         "category": "Ruff"
       }
     ],
@@ -176,8 +194,11 @@
     "watch": "tsc -watch -p ./",
     "lint": "eslint src --ext ts"
   },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
   "devDependencies": {
-    "@types/node": "^20.11.0",
+    "@types/node": "^20.19.43",
     "@types/vscode": "^1.85.0",
     "@typescript-eslint/eslint-plugin": "^6.19.0",
     "@typescript-eslint/parser": "^6.19.0",

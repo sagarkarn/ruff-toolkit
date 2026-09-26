@@ -2,7 +2,7 @@
   "name": "ruff-toolkit",
   "displayName": "Ruff Toolkit",
   "description": "Integrates Python Ruff linter and formatter into VS Code context menus and Command Palette.",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "publisher": "sagarkarn",
   "author": "Sagar Karn",
   "repository": {

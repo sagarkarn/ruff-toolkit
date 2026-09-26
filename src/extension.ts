@@ -5,6 +5,8 @@ import { registerCheckCommands } from './commands/check';
 import { registerFixCommands } from './commands/fix';
 import { registerOrganizeImportsCommands } from './commands/organizeImports';
 import { registerChangedFilesCommands } from './commands/changedFiles';
+import { registerDashboardCommands } from './commands/dashboard';
+import { DashboardPanel } from './panels/dashboardPanel';
 import { outputService } from './services/outputService';
 import { LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node';
 
@@ -22,6 +24,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   registerFixCommands(context);
   registerOrganizeImportsCommands(context);
   registerChangedFilesCommands(context);
+  registerDashboardCommands(context);
 
   // Register new utility commands
   const showVersionCmd = vscode.commands.registerCommand('ruffToolkit.showVersion', async () => {
@@ -105,6 +108,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
  * Called when the extension is deactivated.
  */
 export function deactivate(): Thenable<void> | undefined {
+  // Dispose dashboard panel if open
+  DashboardPanel.currentPanel?.dispose();
+
   // Dispose diagnostic collection if exists
   ruffService.disposeDiagnostics();
   outputService.logInfo('Ruff Toolkit extension is deactivated.');
@@ -112,3 +118,4 @@ export function deactivate(): Thenable<void> | undefined {
     return client.stop();
   }
 }
+

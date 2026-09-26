@@ -107,6 +107,12 @@
         "category": "Ruff"
       },
       {
+        "command": "ruffToolkit.openDashboard",
+        "title": "Open Project Dashboard",
+        "category": "Ruff",
+        "icon": "$(dashboard)"
+      },
+      {
         "command": "ruffToolkit.showVersion",
         "title": "Show Ruff Version",
         "category": "Ruff"
@@ -176,6 +182,10 @@
         {
           "command": "ruffToolkit.checkAndFixChangedFiles",
           "group": "1_actions@4"
+        },
+        {
+          "command": "ruffToolkit.openDashboard",
+          "group": "1_actions@5"
         }
       ],
       "ruffToolkit.submenu": [
@@ -198,6 +208,10 @@
         {
           "command": "ruffToolkit.organizeImports",
           "group": "1_actions@5"
+        },
+        {
+          "command": "ruffToolkit.openDashboard",
+          "group": "2_dashboard@1"
         }
       ],
       "commandPalette": [
@@ -247,6 +261,10 @@
         },
         {
           "command": "ruffToolkit.checkAndFixChangedFiles",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "ruffToolkit.openDashboard",
           "when": "workspaceFolderCount > 0"
         }
       ]

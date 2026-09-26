@@ -85,13 +85,18 @@ export class RuffService {
             const pythonPath = resolvedEnv?.executable?.uri?.fsPath || activeEnvPath.path;
             if (pythonPath) {
               const pythonDir = path.dirname(pythonPath);
-              const ruffWindows = path.join(pythonDir, 'ruff.exe');
-              const ruffUnix = path.join(pythonDir, 'ruff');
-              if (await fileExists(ruffWindows)) {
-                return ruffWindows;
-              }
-              if (await fileExists(ruffUnix)) {
-                return ruffUnix;
+              const candidates = [
+                path.join(pythonDir, 'Scripts', 'ruff.exe'),
+                path.join(pythonDir, 'Scripts', 'ruff'),
+                path.join(pythonDir, 'bin', 'ruff'),
+                path.join(pythonDir, 'bin', 'ruff.exe'),
+                path.join(pythonDir, 'ruff.exe'),
+                path.join(pythonDir, 'ruff'),
+              ];
+              for (const c of candidates) {
+                if (await fileExists(c)) {
+                  return c;
+                }
               }
             }
           }
@@ -127,7 +132,43 @@ export class RuffService {
       return settings.ruffPath;
     }
 
-    // 4. Fall back to global "ruff"
+    // 4. Try py launcher on Windows
+    if (process.platform === 'win32') {
+      try {
+        const pyResult = await executeProcess('py', ['-c', 'import sys; print(sys.executable)']);
+        if (pyResult.code === 0 && pyResult.stdout.trim()) {
+          const pyDir = path.dirname(pyResult.stdout.trim());
+          const pyCandidates = [
+            path.join(pyDir, 'Scripts', 'ruff.exe'),
+            path.join(pyDir, 'Scripts', 'ruff'),
+            path.join(pyDir, 'ruff.exe'),
+          ];
+          for (const c of pyCandidates) {
+            if (await fileExists(c)) {
+              return c;
+            }
+          }
+        }
+      } catch {
+        // Ignored
+      }
+    }
+
+    // 5. Try system where / which command
+    try {
+      const whichCmd = process.platform === 'win32' ? 'where.exe' : 'which';
+      const whichResult = await executeProcess(whichCmd, ['ruff']);
+      if (whichResult.code === 0 && whichResult.stdout.trim()) {
+        const firstLine = whichResult.stdout.trim().split(/\r?\n/)[0].trim();
+        if (firstLine && (await fileExists(firstLine))) {
+          return firstLine;
+        }
+      }
+    } catch {
+      // Ignored
+    }
+
+    // 6. Fall back to global "ruff"
     return 'ruff';
   }
 

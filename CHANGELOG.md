@@ -12,6 +12,14 @@ All notable changes to the **Ruff Toolkit** extension will be documented in this
   - `Ruff: Check & Fix Changed Files` (`ruffToolkit.checkAndFixChangedFiles`)
 - **Source Control (SCM) Integration**: Integrated a `Ruff` submenu in the Source Control view title bar for one-click access.
 - **Git Service**: Intelligently identifies modified, staged, and untracked Python files (`.py`, `.pyi`) via VS Code Git API and CLI fallback, safely excluding deleted files.
+- **Ruff Project Health Dashboard**:
+  - Added `Ruff: Open Project Dashboard` (`ruffToolkit.openDashboard`) webview panel.
+  - Interactive overview with total issues, errors, warnings, auto-fixable counts, and affected files count.
+  - Rule-based accordion drilldown displaying files and line/column locations.
+  - Click-to-navigate directly into editor code side-by-side.
+  - One-click action buttons to apply all auto-fixes, format workspace, or re-scan.
+  - Real-time client-side search and filtering by severity or fixability.
+
 
 ## [1.0.0] - 2026-06-05
 

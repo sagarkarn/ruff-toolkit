@@ -27,3 +27,6 @@ export interface ChangedFilesResult {
   uris: import('vscode').Uri[];
 }
 
+export * from './dashboard';
+
+

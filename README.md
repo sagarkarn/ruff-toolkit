@@ -43,6 +43,14 @@ Quickly run Ruff on all files that have been modified, staged, or newly added in
 
 Uses VS Code's native Git API with automated fallback to `git status` CLI, processing only valid Python files (`.py`, `.pyi`) and ignoring deleted files.
 
+### 6. 📊 Ruff Project Health Dashboard
+Open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) and run **`Ruff: Open Project Dashboard`**:
+* **Visual Metric Cards**: Instantly view Total Issues, Errors, Warnings, Auto-Fixable count, and Affected Files count.
+* **Interactive Rule Drill-Down**: Click any rule code (e.g. `F401`) to inspect every file containing violations and exact line/column occurrences.
+* **One-Click Code Navigation**: Click any violation line to jump directly to the code in an editor beside the dashboard.
+* **One-Click Workspace Actions**: Run **Fix All Auto-fixable**, **Format Workspace**, or **Refresh** directly from the dashboard toolbar.
+* **Search & Filters**: Filter rules dynamically by keyword or toggle between All, Auto-fixable, Errors, and Warnings.
+
 
 ---
 

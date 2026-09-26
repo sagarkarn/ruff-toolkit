@@ -21,3 +21,9 @@ export interface RuffCommandResult {
   command: string;
   violationsCount?: number;
 }
+
+export interface ChangedFilesResult {
+  isGitRepo: boolean;
+  uris: import('vscode').Uri[];
+}
+

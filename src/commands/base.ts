@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { isPythonFile, getAllWorkspacePaths } from '../utils/fileUtils';
 import { ruffService } from '../services/ruffService';
+import { gitService } from '../services/gitService';
 import { outputService } from '../services/outputService';
 import { RuffCommandResult } from '../types';
 
@@ -184,3 +185,95 @@ export async function runWorkspaceAction(
     });
   }
 }
+
+/**
+ * Standard runner for Git changed files actions.
+ */
+export async function runChangedFilesAction(
+  actionLabel: string,
+  fileAction: (uri: vscode.Uri, silent: boolean, token?: vscode.CancellationToken) => Promise<RuffCommandResult>
+): Promise<void> {
+  const workspacePaths = getAllWorkspacePaths();
+  if (workspacePaths.length === 0) {
+    vscode.window.showWarningMessage(`No workspace folders open to ${actionLabel}.`);
+    return;
+  }
+
+  const { isGitRepo, uris: targets } = await gitService.getChangedPythonFiles();
+
+  if (!isGitRepo) {
+    vscode.window.showWarningMessage('Ruff: No Git repository detected in the current workspace.');
+    return;
+  }
+
+  if (targets.length === 0) {
+    vscode.window.showInformationMessage('✓ Ruff: No changed Python files found.');
+    return;
+  }
+
+  const installed = await ruffService.checkRuffInstalled(targets[0]);
+  if (!installed) {
+    return;
+  }
+
+  if (targets.length === 1) {
+    // Single file execution - run with silent = false
+    await fileAction(targets[0], false);
+  } else {
+    // Multi-file execution with progress
+    await vscode.window.withProgress({
+      location: vscode.ProgressLocation.Notification,
+      title: `Ruff: Processing ${targets.length} changed files...`,
+      cancellable: true
+    }, async (progress, token) => {
+      let completedCount = 0;
+      let totalViolations = 0;
+      let hasViolations = false;
+
+      for (const target of targets) {
+        if (token.isCancellationRequested) {
+          vscode.window.showInformationMessage(`Ruff: Action cancelled.`);
+          break;
+        }
+
+        const relativeName = vscode.workspace.asRelativePath(target) || target.fsPath;
+        progress.report({
+          message: `Processing ${relativeName}`,
+          increment: (1 / targets.length) * 100
+        });
+
+        const result = await fileAction(target, true, token);
+        if (result.success) {
+          completedCount++;
+          if (result.violationsCount !== undefined) {
+            totalViolations += result.violationsCount;
+            if (result.violationsCount > 0) {
+              hasViolations = true;
+            }
+          }
+        }
+      }
+
+      const settings = ruffService.getSettings();
+      if (settings.showNotifications) {
+        if (actionLabel.startsWith('check')) {
+          if (hasViolations) {
+            vscode.window.showWarningMessage(
+              `⚠ Ruff check completed: found ${totalViolations} issues across ${completedCount} changed files.`,
+              'Show Output'
+            ).then(selection => {
+              if (selection === 'Show Output') {
+                outputService.show();
+              }
+            });
+          } else {
+            vscode.window.showInformationMessage(`✓ Ruff check completed: no issues found in ${completedCount} changed files.`);
+          }
+        } else {
+          vscode.window.showInformationMessage(`✓ Ruff ${actionLabel} completed for ${completedCount} of ${targets.length} changed files.`);
+        }
+      }
+    });
+  }
+}
+

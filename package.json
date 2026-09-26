@@ -2,7 +2,7 @@
   "name": "ruff-toolkit",
   "displayName": "Ruff Toolkit",
   "description": "Integrates Python Ruff linter and formatter into VS Code context menus and Command Palette.",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "publisher": "sagarkarn",
   "author": "Sagar Karn",
   "repository": {
@@ -87,6 +87,26 @@
         "category": "Ruff"
       },
       {
+        "command": "ruffToolkit.checkChangedFiles",
+        "title": "Check Changed Files",
+        "category": "Ruff"
+      },
+      {
+        "command": "ruffToolkit.fixChangedFiles",
+        "title": "Fix Changed Files",
+        "category": "Ruff"
+      },
+      {
+        "command": "ruffToolkit.formatChangedFiles",
+        "title": "Format Changed Files",
+        "category": "Ruff"
+      },
+      {
+        "command": "ruffToolkit.checkAndFixChangedFiles",
+        "title": "Check & Fix Changed Files",
+        "category": "Ruff"
+      },
+      {
         "command": "ruffToolkit.showVersion",
         "title": "Show Ruff Version",
         "category": "Ruff"
@@ -106,9 +126,19 @@
       {
         "id": "ruffToolkit.submenu",
         "label": "Ruff"
+      },
+      {
+        "id": "ruffToolkit.scmSubmenu",
+        "label": "Ruff"
       }
     ],
     "menus": {
+      "scm/title": [
+        {
+          "submenu": "ruffToolkit.scmSubmenu",
+          "group": "navigation"
+        }
+      ],
       "explorer/context": [
         {
           "submenu": "ruffToolkit.submenu",
@@ -128,6 +158,24 @@
           "submenu": "ruffToolkit.submenu",
           "when": "resourceExtname == .py",
           "group": "navigation"
+        }
+      ],
+      "ruffToolkit.scmSubmenu": [
+        {
+          "command": "ruffToolkit.checkChangedFiles",
+          "group": "1_actions@1"
+        },
+        {
+          "command": "ruffToolkit.fixChangedFiles",
+          "group": "1_actions@2"
+        },
+        {
+          "command": "ruffToolkit.formatChangedFiles",
+          "group": "1_actions@3"
+        },
+        {
+          "command": "ruffToolkit.checkAndFixChangedFiles",
+          "group": "1_actions@4"
         }
       ],
       "ruffToolkit.submenu": [
@@ -184,9 +232,26 @@
         {
           "command": "ruffToolkit.fixWorkspace",
           "when": "workspaceHighlight"
+        },
+        {
+          "command": "ruffToolkit.checkChangedFiles",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "ruffToolkit.fixChangedFiles",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "ruffToolkit.formatChangedFiles",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
+          "command": "ruffToolkit.checkAndFixChangedFiles",
+          "when": "workspaceFolderCount > 0"
         }
       ]
     }
+
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

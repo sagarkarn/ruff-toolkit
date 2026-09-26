@@ -4,6 +4,7 @@ import { registerFormatCommands } from './commands/format';
 import { registerCheckCommands } from './commands/check';
 import { registerFixCommands } from './commands/fix';
 import { registerOrganizeImportsCommands } from './commands/organizeImports';
+import { registerChangedFilesCommands } from './commands/changedFiles';
 import { outputService } from './services/outputService';
 import { LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node';
 
@@ -20,6 +21,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   registerCheckCommands(context);
   registerFixCommands(context);
   registerOrganizeImportsCommands(context);
+  registerChangedFilesCommands(context);
 
   // Register new utility commands
   const showVersionCmd = vscode.commands.registerCommand('ruffToolkit.showVersion', async () => {

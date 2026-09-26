@@ -1,11 +1,25 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as fs from 'fs';
 
 /**
- * Checks if a URI represents a Python file.
+ * Checks if a file exists on disk.
+ */
+export async function fileExists(filePath: string): Promise<boolean> {
+  try {
+    const stat = await fs.promises.stat(filePath);
+    return stat.isFile();
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Checks if a URI represents a Python file (.py or .pyi).
  */
 export function isPythonFile(uri: vscode.Uri): boolean {
-  return path.extname(uri.fsPath).toLowerCase() === '.py';
+  const ext = path.extname(uri.fsPath).toLowerCase();
+  return ext === '.py' || ext === '.pyi';
 }
 
 /**

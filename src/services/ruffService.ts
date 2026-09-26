@@ -1,17 +1,8 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as fs from 'fs';
 import { executeProcess, executeProcessCancelable } from '../utils/process';
-import { getWorkspacePath } from '../utils/fileUtils';
+import { getWorkspacePath, fileExists } from '../utils/fileUtils';
 
-async function fileExists(filePath: string): Promise<boolean> {
-  try {
-    const stat = await fs.promises.stat(filePath);
-    return stat.isFile();
-  } catch {
-    return false;
-  }
-}
 import { outputService } from './outputService';
 import { ExtensionSettings, ProcessResult, RuffCommandResult } from '../types';
 

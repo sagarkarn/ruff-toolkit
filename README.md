@@ -34,6 +34,16 @@ Run operations across your entire workspace. Open the Command Palette (`Ctrl+Shi
 
 These run directly inside the workspace folders. (Supports multi-folder workspaces too).
 
+### 5. Git Changed Files Actions
+Quickly run Ruff on all files that have been modified, staged, or newly added in your Git repository. Open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) or click the **Ruff** submenu in the Source Control (SCM) title bar:
+* **Ruff: Check Changed Files**: Runs `ruff check` on all changed Python files.
+* **Ruff: Fix Changed Files**: Runs `ruff check --fix` on all changed Python files.
+* **Ruff: Format Changed Files**: Runs `ruff format` on all changed Python files.
+* **Ruff: Check & Fix Changed Files**: Runs `ruff check --fix` followed by `ruff format` on all changed Python files.
+
+Uses VS Code's native Git API with automated fallback to `git status` CLI, processing only valid Python files (`.py`, `.pyi`) and ignoring deleted files.
+
+
 ---
 
 ## Extension Settings
